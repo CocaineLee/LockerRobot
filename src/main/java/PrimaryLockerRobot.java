@@ -25,7 +25,7 @@ public class PrimaryLockerRobot {
     return lockers.stream()
         .filter(locker -> locker.getAvailability() != 0)
         .findFirst()
-        .orElseThrow(()->new NoEmptyLockerException())
+        .orElseThrow(() -> new NoEmptyLockerException())
         .saveBag(bag);
   }
 
@@ -44,5 +44,14 @@ public class PrimaryLockerRobot {
         .filter(b -> b != null)
         .findFirst()
         .orElseThrow(() -> new InvalidTicket());
+  }
+
+  public Boolean isNotFull() {
+    for (Locker locker : lockers) {
+      if (locker.getAvailability() > 0) {
+        return true;
+      }
+    }
+    return false;
   }
 }

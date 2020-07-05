@@ -44,4 +44,13 @@ public class SuperLockerRobot {
         .findFirst()
         .orElseThrow(() -> new InvalidTicket());
   }
+
+  public Boolean isNotFull() {
+    for (Locker locker : lockers) {
+      if (locker.getAvailability() > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
