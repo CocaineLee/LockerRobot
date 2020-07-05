@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import exception.InvalidBagType;
 import exception.InvalidTicket;
 import exception.LockerException;
 import exception.NoEmptyLockerException;
@@ -24,7 +25,8 @@ public class LockerTest {
   }
 
   @Test
-  public void should_save_successfully_and_get_S_ticket_when_save_S_bag_given_Locker_is_S() throws LockerException, NoEmptyLockerException {
+  public void should_save_successfully_and_get_S_ticket_when_save_S_bag_given_Locker_is_S()
+      throws LockerException, NoEmptyLockerException, InvalidBagType {
     Locker locker = new Locker(2, BagType.S);
     Bag bag = new Bag(BagType.S);
 
@@ -35,7 +37,8 @@ public class LockerTest {
   }
 
   @Test
-  public void should_save_successfully_and_get_M_ticket_when_save_M_bag_given_Locker_is_M() throws LockerException, NoEmptyLockerException {
+  public void should_save_successfully_and_get_M_ticket_when_save_M_bag_given_Locker_is_M()
+      throws LockerException, NoEmptyLockerException, InvalidBagType {
     Locker locker = new Locker(2, BagType.M);
     Bag bag = new Bag(BagType.M);
 
@@ -46,7 +49,8 @@ public class LockerTest {
   }
 
   @Test
-  public void should_save_successfully_and_get_L_ticket_when_save_L_bag_given_Locker_is_L() throws LockerException, NoEmptyLockerException {
+  public void should_save_successfully_and_get_L_ticket_when_save_L_bag_given_Locker_is_L()
+      throws LockerException, NoEmptyLockerException, InvalidBagType {
     Locker locker = new Locker(2, BagType.L);
     Bag bag = new Bag(BagType.L);
 
@@ -57,7 +61,7 @@ public class LockerTest {
   }
 
   @Test
-  public void should_fail_to_save_when_save_L_bag_given_Locker_is_L_but_full() throws LockerException, NoEmptyLockerException {
+  public void should_fail_to_save_when_save_L_bag_given_Locker_is_L_but_full() throws LockerException, NoEmptyLockerException, InvalidBagType {
     Locker locker = new Locker(1, BagType.L);
     Bag bag1 = new Bag(BagType.L);
     Bag bag2 = new Bag(BagType.L);
@@ -68,8 +72,17 @@ public class LockerTest {
   }
 
   @Test
+  public void should_fail_to_save_when_save_L_bag_given_Locker_is_M() throws LockerException {
+    Locker locker = new Locker(1, BagType.L);
+    Bag bag = new Bag(BagType.M);
+
+    InvalidBagType invalidBagType = assertThrows(InvalidBagType.class, () -> locker.saveBag(bag));
+    assertEquals("Fail to save, wrong bag type", invalidBagType.getMessage());
+  }
+
+  @Test
   public void should_get_L_bag_successfully_when_get_bag_from_L_Locker_given_ticket_is_L()
-      throws NoEmptyLockerException, LockerException, InvalidTicket {
+      throws NoEmptyLockerException, LockerException, InvalidTicket, InvalidBagType {
     Locker locker = new Locker(1, BagType.L);
     Bag bag = new Bag(BagType.L);
     Ticket ticket = locker.saveBag(bag);
@@ -80,7 +93,7 @@ public class LockerTest {
   }
 
   @Test
-  public void should_fail_to_get_L_bag_when_get_bag_from_M_Locker_given_ticket_is_L() throws NoEmptyLockerException, LockerException {
+  public void should_fail_to_get_L_bag_when_get_bag_from_M_Locker_given_ticket_is_L() throws NoEmptyLockerException, LockerException, InvalidBagType {
     Locker locker = new Locker(1, BagType.M);
     Bag bag = new Bag(BagType.M);
     locker.saveBag(bag);
@@ -92,7 +105,8 @@ public class LockerTest {
   }
 
   @Test
-  public void should_fail_to_get_L_bag_when_get_bag_from_L_Locker_given_ticket_is_L_but_invalid() throws NoEmptyLockerException, LockerException {
+  public void should_fail_to_get_L_bag_when_get_bag_from_L_Locker_given_ticket_is_L_but_invalid()
+      throws NoEmptyLockerException, LockerException, InvalidBagType {
     Locker locker = new Locker(1, BagType.L);
     Bag bag = new Bag(BagType.L);
     locker.saveBag(bag);

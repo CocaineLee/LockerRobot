@@ -1,3 +1,4 @@
+import exception.InvalidBagType;
 import exception.InvalidTicket;
 import exception.LockerException;
 import exception.NoEmptyLockerException;
@@ -19,7 +20,10 @@ public class Locker {
   }
 
 
-  public Ticket saveBag(Bag bag) throws NoEmptyLockerException {
+  public Ticket saveBag(Bag bag) throws NoEmptyLockerException, InvalidBagType {
+    if (!bag.getBagType().equals(bagType)) {
+      throw new InvalidBagType();
+    }
     if (capability <= 0) {
       throw new NoEmptyLockerException();
     }
