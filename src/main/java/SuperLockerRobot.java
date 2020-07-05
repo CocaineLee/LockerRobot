@@ -1,4 +1,5 @@
 import exception.InvalidBagType;
+import exception.InvalidTicket;
 import exception.NoEmptyLockerException;
 import exception.SuperLockerRobotException;
 import java.util.List;
@@ -25,5 +26,22 @@ public class SuperLockerRobot {
     }
 //    Locker locker = lockers.stream().max((o1, o2) -> (o1.getAvailabilityRate() > (o2.getAvailabilityRate())) ? 0 : 1).get();
     return locker.saveBag(bag);
+  }
+
+  public Bag getBag(Ticket ticket) throws InvalidTicket {
+    if (!ticket.getBagType().equals(BagType.L)) {
+      throw new InvalidTicket();
+    }
+    return lockers.stream()
+        .map(locker -> {
+          try {
+            return locker.getBag(ticket);
+          } catch (InvalidTicket e) {
+            return null;
+          }
+        })
+        .filter(b -> b != null)
+        .findFirst()
+        .orElseThrow(() -> new InvalidTicket());
   }
 }
