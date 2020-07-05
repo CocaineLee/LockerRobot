@@ -1,3 +1,4 @@
+import exception.InvalidTicket;
 import exception.LockerException;
 import exception.NoEmptyLockerException;
 import java.util.HashMap;
@@ -5,9 +6,8 @@ import java.util.Map;
 
 public class Locker {
 
-  private final Integer capability;
+  private Integer capability;
   private final BagType bagType;
-  private Integer availability;
   private Map<Ticket, Bag> ticketBagMap = new HashMap<>();
 
   public Locker(Integer capability, BagType bagType) throws LockerException {
@@ -15,18 +15,29 @@ public class Locker {
       throw new LockerException();
     }
     this.capability = capability;
-    this.availability = capability;
     this.bagType = bagType;
   }
 
 
   public Ticket saveBag(Bag bag) throws NoEmptyLockerException {
-    if (availability <= 0) {
+    if (capability <= 0) {
       throw new NoEmptyLockerException();
     }
-    Ticket ticket = new Ticket(bag.getBagType());
-    availability--;
+    Ticket ticket = new Ticket(bagType);
+    capability--;
     ticketBagMap.put(ticket, bag);
     return ticket;
+  }
+
+  public Bag getBag(Ticket ticket) throws InvalidTicket {
+    if (!ticket.getBagType().equals(bagType)) {
+      throw new InvalidTicket();
+    }
+    Bag bag = ticketBagMap.get(ticket);
+    if (bag != null) {
+      capability++;
+      return bag;
+    }
+    throw new InvalidTicket();
   }
 }

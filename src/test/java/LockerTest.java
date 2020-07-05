@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import exception.InvalidTicket;
 import exception.LockerException;
 import exception.NoEmptyLockerException;
 import org.junit.jupiter.api.Test;
@@ -13,11 +14,12 @@ import org.junit.jupiter.api.Test;
 //- Given：有一个L locker没容量 ， 以及一个L Bag When：使用该Locker存该包 Then：存包失败，该Locker已满。
 //- Given：有一个L locker, 以及L 的ticket When：使用该Ticket取包 Then：取Bag成功，得到对应的Bag。
 //- Given：有一个L locker, 以及M 的ticket When：使用该Ticket取包 Then：取Bag失败，得到报错信息，取包失败，请使用正确的Ticket。
+//- Given：有一个L locker, 以及L 的invalid ticket When：使用该Ticket取包 Then：取Bag失败，得到报错信息，取包失败，请使用正确的Ticket。
 public class LockerTest {
 
   @Test
   public void should_throw_error_when_locker_is_config_given_capability_is_0() {
-    LockerException lockerException = assertThrows(LockerException.class, () -> new Locker(0,BagType.S));
+    LockerException lockerException = assertThrows(LockerException.class, () -> new Locker(0, BagType.S));
     assertEquals("Initialization of locker failed, the capability can't be 0", lockerException.getMessage());
   }
 
@@ -64,4 +66,41 @@ public class LockerTest {
     NoEmptyLockerException noEmptyLockerException = assertThrows(NoEmptyLockerException.class, () -> locker.saveBag(bag2));
     assertEquals("Fail to save, locker is full", noEmptyLockerException.getMessage());
   }
+
+  @Test
+  public void should_get_L_bag_successfully_when_get_bag_from_L_Locker_given_ticket_is_L()
+      throws NoEmptyLockerException, LockerException, InvalidTicket {
+    Locker locker = new Locker(1, BagType.L);
+    Bag bag = new Bag(BagType.L);
+    Ticket ticket = locker.saveBag(bag);
+
+    Bag myBag = locker.getBag(ticket);
+
+    assertEquals(bag, myBag);
+  }
+
+  @Test
+  public void should_fail_to_get_L_bag_when_get_bag_from_M_Locker_given_ticket_is_L() throws NoEmptyLockerException, LockerException {
+    Locker locker = new Locker(1, BagType.M);
+    Bag bag = new Bag(BagType.M);
+    locker.saveBag(bag);
+    Ticket wrongTicket = new Ticket(BagType.L);
+
+    InvalidTicket invalidTicket = assertThrows(InvalidTicket.class, () -> locker.getBag(wrongTicket));
+
+    assertEquals("Fail to get the bag, invalid ticket.", invalidTicket.getMessage());
+  }
+
+  @Test
+  public void should_fail_to_get_L_bag_when_get_bag_from_L_Locker_given_ticket_is_L_but_invalid() throws NoEmptyLockerException, LockerException {
+    Locker locker = new Locker(1, BagType.L);
+    Bag bag = new Bag(BagType.L);
+    locker.saveBag(bag);
+    Ticket wrongTicket = new Ticket(BagType.L);
+
+    InvalidTicket invalidTicket = assertThrows(InvalidTicket.class, () -> locker.getBag(wrongTicket));
+
+    assertEquals("Fail to get the bag, invalid ticket.", invalidTicket.getMessage());
+  }
+
 }
