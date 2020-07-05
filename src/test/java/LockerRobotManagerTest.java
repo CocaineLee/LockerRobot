@@ -1,15 +1,15 @@
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import exception.InvalidBagType;
+import exception.InvalidTicket;
 import exception.LockerException;
 import exception.LockerRobotManagerException;
 import exception.NoEmptyLockerException;
 import exception.PrimaryLockerRobotException;
 import exception.SuperLockerRobotException;
-import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +21,11 @@ class LockerRobotManagerTest {
     Locker locker1 = new Locker(1, BagType.M);
     Locker locker2 = new Locker(1, BagType.M);
     Locker locker3 = new Locker(1, BagType.L);
-    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(asList(locker2));
-    SuperLockerRobot superLockerRobot = new SuperLockerRobot(asList(locker3));
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Collections.singletonList(locker2));
+    SuperLockerRobot superLockerRobot = new SuperLockerRobot(Collections.singletonList(locker3));
 
     LockerRobotManagerException lockerRobotManagerException = assertThrows(LockerRobotManagerException.class,
-        () -> new LockerRobotManager(Collections.singletonList(locker1), asList(primaryLockerRobot),
+        () -> new LockerRobotManager(Collections.singletonList(locker1), Collections.singletonList(primaryLockerRobot),
             Collections.singletonList(superLockerRobot)));
 
     assertEquals("Initialization of LockerRobotManager failed, locker must be S", lockerRobotManagerException.getMessage());
@@ -97,8 +97,39 @@ class LockerRobotManagerTest {
     lockerRobotManager.saveBag(bag3);
     Bag bag4 = new Bag(BagType.L);
 
-
     NoEmptyLockerException noEmptyLockerException = assertThrows(NoEmptyLockerException.class, () -> lockerRobotManager.saveBag(bag4));
     assertEquals("Fail to save, locker is full", noEmptyLockerException.getMessage());
   }
+
+  @Test
+  public void should_get_MBag_when_get_from_LockerRobotManager_given_manage_locker_and_PrimaryLockerRobot()
+      throws LockerException, PrimaryLockerRobotException, LockerRobotManagerException, NoEmptyLockerException, InvalidBagType, InvalidTicket {
+    Locker locker1 = new Locker(1, BagType.S);
+    Locker locker2 = new Locker(1, BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(asList(locker2));
+    LockerRobotManager lockerRobotManager = new LockerRobotManager(Collections.singletonList(locker1), Collections.singletonList(primaryLockerRobot),
+        null);
+    Bag bag = new Bag(BagType.M);
+    Ticket ticket = lockerRobotManager.saveBag(bag);
+
+    Bag myBag = lockerRobotManager.getBag(ticket);
+    assertEquals(bag, myBag);
+  }
+
+  @Test
+  public void should_fail_to_get_MBag_when_get_from_LockerRobotManager_given_manage_locker_and_PrimaryLockerRobot_and_ticket_is_invalid()
+      throws LockerException, PrimaryLockerRobotException, LockerRobotManagerException, NoEmptyLockerException, InvalidBagType, InvalidTicket {
+    Locker locker1 = new Locker(1, BagType.S);
+    Locker locker2 = new Locker(1, BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(asList(locker2));
+    LockerRobotManager lockerRobotManager = new LockerRobotManager(Collections.singletonList(locker1), Collections.singletonList(primaryLockerRobot),
+        null);
+    Bag bag = new Bag(BagType.M);
+    lockerRobotManager.saveBag(bag);
+    Ticket ticket = new Ticket(BagType.M);
+
+    InvalidTicket invalidTicket = assertThrows(InvalidTicket.class, () -> lockerRobotManager.getBag(ticket));
+    assertEquals("Fail to get the bag, invalid ticket.", invalidTicket.getMessage());
+  }
+
 }
