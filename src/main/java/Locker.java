@@ -48,4 +48,8 @@ public class Locker {
   public BagType getBagType() {
     return bagType;
   }
+
+  public Integer getCapability() {
+    return capability;
+  }
 }

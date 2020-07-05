@@ -1,6 +1,10 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import exception.InvalidBagType;
 import exception.LockerException;
+import exception.NoEmptyLockerException;
 import exception.PrimaryLockerRobotException;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
@@ -19,8 +23,64 @@ class PrimaryLockerRobotTest {
   @Test
   public void should_fail_to_config_PrimaryLockerRobot_when_construct_given_locker_is_not_M() throws LockerException {
     Locker locker = new Locker(1, BagType.S);
-    PrimaryLockerRobotException primaryLockerRobotException = assertThrows(PrimaryLockerRobotException.class, () -> new PrimaryLockerRobot(Arrays.asList(locker)));
+    PrimaryLockerRobotException primaryLockerRobotException = assertThrows(PrimaryLockerRobotException.class,
+        () -> new PrimaryLockerRobot(Arrays.asList(locker)));
     assertEquals("Initialization of PrimaryLockerRobot failed, locker must be M", primaryLockerRobotException.getMessage());
+  }
+
+  @Test
+  public void should_save_m_bag_in_locker1_when_use_PrimaryLockerRobot_save_given_locker1_locker2_are_not_full()
+      throws LockerException, PrimaryLockerRobotException, NoEmptyLockerException, InvalidBagType {
+    Locker locker1 = new Locker(1, BagType.M);
+    Locker locker2 = new Locker(1, BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Arrays.asList(locker1, locker2));
+    Bag bag = new Bag(BagType.M);
+
+    Ticket ticket = primaryLockerRobot.saveBag(bag);
+
+    assertNotNull(ticket);
+    assertEquals(BagType.M, ticket.getBagType());
+  }
+
+  @Test
+  public void should_save_m_bag_in_locker2_when_use_PrimaryLockerRobot_save_given_locker1_is_full_locker2_is_not_full()
+      throws LockerException, PrimaryLockerRobotException, NoEmptyLockerException, InvalidBagType {
+    Locker locker1 = new Locker(1, BagType.M);
+    Locker locker2 = new Locker(2, BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Arrays.asList(locker1, locker2));
+    Bag bag1 = new Bag(BagType.M);
+    primaryLockerRobot.saveBag(bag1);
+    Bag bag2 = new Bag(BagType.M);
+
+    Ticket ticket = primaryLockerRobot.saveBag(bag2);
+
+    assertNotNull(ticket);
+    assertEquals(BagType.M, ticket.getBagType());
+    assertEquals(1, locker2.getCapability());
+  }
+
+  @Test
+  public void should_fail_to_save_when_use_PrimaryLockerRobot_save_given_locker_is_full()
+      throws LockerException, PrimaryLockerRobotException, NoEmptyLockerException, InvalidBagType {
+    Locker locker1 = new Locker(1, BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Arrays.asList(locker1));
+    Bag bag1 = new Bag(BagType.M);
+    primaryLockerRobot.saveBag(bag1);
+    Bag bag2 = new Bag(BagType.M);
+
+    NoEmptyLockerException noEmptyLockerException = assertThrows(NoEmptyLockerException.class, () -> primaryLockerRobot.saveBag(bag2));
+    assertEquals("Fail to save, locker is full", noEmptyLockerException.getMessage());
+  }
+
+  @Test
+  public void should_fail_to_save_when_use_PrimaryLockerRobot_save_given_locker_is_not_full_bag_is_not_m()
+      throws LockerException, PrimaryLockerRobotException {
+    Locker locker1 = new Locker(1, BagType.M);
+    Bag bag = new Bag(BagType.S);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Arrays.asList(locker1));
+
+    InvalidBagType invalidBagType = assertThrows(InvalidBagType.class, () -> primaryLockerRobot.saveBag(bag));
+    assertEquals("Fail to save, wrong bag type", invalidBagType.getMessage());
   }
 
 
