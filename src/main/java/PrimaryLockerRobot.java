@@ -1,4 +1,5 @@
 import exception.InvalidBagType;
+import exception.InvalidTicket;
 import exception.NoEmptyLockerException;
 import exception.PrimaryLockerRobotException;
 import java.util.List;
@@ -26,5 +27,22 @@ public class PrimaryLockerRobot {
         .findFirst()
         .orElseThrow(()->new NoEmptyLockerException())
         .saveBag(bag);
+  }
+
+  public Bag getBag(Ticket ticket) throws InvalidTicket {
+    if (!ticket.getBagType().equals(BagType.M)) {
+      throw new InvalidTicket();
+    }
+    return lockers.stream()
+        .map(locker -> {
+          try {
+            return locker.getBag(ticket);
+          } catch (InvalidTicket e) {
+            return null;
+          }
+        })
+        .filter(b -> b != null)
+        .findFirst()
+        .orElseThrow(() -> new InvalidTicket());
   }
 }

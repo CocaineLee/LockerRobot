@@ -3,6 +3,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import exception.InvalidBagType;
+import exception.InvalidTicket;
 import exception.LockerException;
 import exception.NoEmptyLockerException;
 import exception.PrimaryLockerRobotException;
@@ -83,5 +84,44 @@ class PrimaryLockerRobotTest {
     assertEquals("Fail to save, wrong bag type", invalidBagType.getMessage());
   }
 
+  @Test
+  public void should_get_M_bag_when_use_PrimaryLockerRobot_get_bag_given_ticket_is_M()
+      throws LockerException, PrimaryLockerRobotException, NoEmptyLockerException, InvalidBagType, InvalidTicket {
+    Locker locker1 = new Locker(1, BagType.M);
+    Bag bag = new Bag(BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Arrays.asList(locker1));
+    Ticket ticket = primaryLockerRobot.saveBag(bag);
 
+    Bag myBag = primaryLockerRobot.getBag(ticket);
+
+    assertEquals(bag, myBag);
+  }
+
+  @Test
+  public void should_fail_to_get_bag_when_use_PrimaryLockerRobot_get_bag_given_ticket_is_L()
+      throws LockerException, PrimaryLockerRobotException, NoEmptyLockerException, InvalidBagType {
+    Locker locker1 = new Locker(1, BagType.M);
+    Bag bag = new Bag(BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Arrays.asList(locker1));
+    primaryLockerRobot.saveBag(bag);
+    Ticket ticket = new Ticket(BagType.L);
+
+    InvalidTicket invalidTicket = assertThrows(InvalidTicket.class, () -> primaryLockerRobot.getBag(ticket));
+
+    assertEquals("Fail to get the bag, invalid ticket.", invalidTicket.getMessage());
+  }
+
+  @Test
+  public void should_fail_to_get_bag_when_use_PrimaryLockerRobot_get_bag_given_ticket_is_invalid()
+      throws LockerException, PrimaryLockerRobotException, NoEmptyLockerException, InvalidBagType {
+    Locker locker1 = new Locker(1, BagType.M);
+    Bag bag = new Bag(BagType.M);
+    PrimaryLockerRobot primaryLockerRobot = new PrimaryLockerRobot(Arrays.asList(locker1));
+    primaryLockerRobot.saveBag(bag);
+    Ticket ticket = new Ticket(BagType.M);
+
+    InvalidTicket invalidTicket = assertThrows(InvalidTicket.class, () -> primaryLockerRobot.getBag(ticket));
+
+    assertEquals("Fail to get the bag, invalid ticket.", invalidTicket.getMessage());
+  }
 }
