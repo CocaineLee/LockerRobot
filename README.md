@@ -20,3 +20,4 @@
 - Given: 有一个管理 MLocker1（ 一个容量）的PrimaryLockerRobot When：使用该 PrimaryLockerRobot 存LBag Then： 存包失败，请将包存入正确的locker
 - Given: 有一个管理 MLocker1（ 一个容量）的PrimaryLockerRobot， 且有一个合法的M Ticket When：使用在 PrimaryLockerRobot上使用该ticket 取MBag Then： 取包成功，等到包
 - Given: 有一个管理 MLocker1（ 一个容量）的PrimaryLockerRobot， 且有一个L Ticket When：使用在 PrimaryLockerRobot上使用该ticket 取MBag Then： 取包失败，请使用正确的Ticket
+- Given: 有一个管理 MLocker1（ 一个容量）的PrimaryLockerRobot， 且有一个非法 Ticket When：使用在 PrimaryLockerRobot上使用该ticket 取MBag Then： 取包失败，请使用正确的Ticket

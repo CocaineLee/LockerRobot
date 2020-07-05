@@ -44,4 +44,8 @@ public class Locker {
     }
     throw new InvalidTicket();
   }
+
+  public BagType getBagType() {
+    return bagType;
+  }
 }
