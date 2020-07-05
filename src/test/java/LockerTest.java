@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import exception.LockerException;
@@ -14,7 +15,18 @@ public class LockerTest {
 
   @Test
   public void should_throw_error_when_locker_is_config_given_capability_is_0() {
-    LockerException lockerException = assertThrows(LockerException.class, () -> new Locker(0));
+    LockerException lockerException = assertThrows(LockerException.class, () -> new Locker(0,BagType.S));
     assertEquals("Initialization of locker failed, the capability can't be 0", lockerException.getMessage());
+  }
+
+  @Test
+  public void should_save_successfully_and_get_S_ticket_when_save_S_bag_given_Locker_is_S() throws LockerException {
+    Locker locker = new Locker(2, BagType.S);
+    Bag bag = new Bag(BagType.S);
+
+    Ticket ticket = locker.saveBag(bag);
+
+    assertNotNull(ticket);
+    assertEquals(BagType.S, ticket.getBagType());
   }
 }
