@@ -57,7 +57,7 @@ class PrimaryLockerRobotTest {
 
     assertNotNull(ticket);
     assertEquals(BagType.M, ticket.getBagType());
-    assertEquals(1, locker2.getCapability());
+    assertEquals(1, locker2.getAvailability());
   }
 
   @Test

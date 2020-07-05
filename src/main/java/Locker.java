@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Locker {
 
-  private Integer capability;
+  final private Integer capability;
   private final BagType bagType;
   private Map<Ticket, Bag> ticketBagMap = new HashMap<>();
 
@@ -24,11 +24,10 @@ public class Locker {
     if (!bag.getBagType().equals(bagType)) {
       throw new InvalidBagType();
     }
-    if (capability <= 0) {
+    if (getAvailability() <= 0) {
       throw new NoEmptyLockerException();
     }
     Ticket ticket = new Ticket(bagType);
-    capability--;
     ticketBagMap.put(ticket, bag);
     return ticket;
   }
@@ -39,7 +38,6 @@ public class Locker {
     }
     Bag bag = ticketBagMap.get(ticket);
     if (bag != null) {
-      capability++;
       return bag;
     }
     throw new InvalidTicket();
@@ -49,7 +47,11 @@ public class Locker {
     return bagType;
   }
 
-  public Integer getCapability() {
-    return capability;
+  public Integer getAvailability() {
+    return capability - ticketBagMap.size();
+  }
+
+  public Double getAvailabilityRate() {
+    return getAvailability() / Double.valueOf(capability);
   }
 }

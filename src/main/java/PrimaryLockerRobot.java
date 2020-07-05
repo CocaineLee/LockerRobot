@@ -23,7 +23,7 @@ public class PrimaryLockerRobot {
       throw new InvalidBagType();
     }
     return lockers.stream()
-        .filter(locker -> locker.getCapability() != 0)
+        .filter(locker -> locker.getAvailability() != 0)
         .findFirst()
         .orElseThrow(()->new NoEmptyLockerException())
         .saveBag(bag);
